@@ -14,7 +14,10 @@ const signup = async (req: Request, res: Response) => {
         const body = req.body;
         const parseResult = signupBody.safeParse(body);
         if (!parseResult.success) {
-            return res.status(400).json({ message: "Invalid Inputs", success:false});
+            return res.status(400).json({ 
+                success: false,
+                message: "Validation failed",
+                errors:parseResult.error.issues});
         }
         const { name, username, mobile, email, password, institute, yearOfStudy, interests, isAdmin } = parseResult.data;
         if (!email.endsWith("@iitkgp.ac.in")) {
@@ -63,8 +66,9 @@ const signup = async (req: Request, res: Response) => {
         const parseResult = signinBody.safeParse(body);
         if (!parseResult.success) {
             return res.status(400).json({
-                message: "Invalid Inputs",
-                success:false
+                success: false,
+                message: "Validation failed",
+                errors:parseResult.error.issues
             });
         }
         const { email, password } = parseResult.data;
@@ -122,12 +126,12 @@ const userUpdate = async (req: Request, res: Response) => {
         const parseResult = updateUserBody.safeParse(body);
         if (!parseResult.success) {
             return res.status(400).json({
-                message: "Invalid inputs",
-                success:false
+                success: false,
+                message: "Validation failed",
+                errors:parseResult.error.issues
             });
         }
         if (parseResult.data.password) {
-            // Hash the password using bcrypt
             const saltRounds = 10;
             parseResult.data.password = await bcrypt.hash(parseResult.data.password, saltRounds);
         }
@@ -147,7 +151,7 @@ const userUpdate = async (req: Request, res: Response) => {
 };
 
 const addBookmark = async (req: Request, res: Response) => {
-    const userId = req.user.id; // Assuming the user ID is set in the request by a middleware
+    const userId = req.user.id; 
     const projectId = req.body.projectId;
     if (!projectId) {
         return res.status(400).json({ success: false, message: "Project ID is required" });
@@ -157,10 +161,10 @@ const addBookmark = async (req: Request, res: Response) => {
             where: { id: userId },
             data: {
                 bookmarks: {
-                    connect: { id: projectId }, // Connect the project to the user's bookmarks
+                    connect: { id: projectId }, 
                 },
             },
-            include: { bookmarks: true }, // Include the updated bookmarks in the response
+            include: { bookmarks: true }, 
         });
 
         return res.status(200).json({ success: true, data: updatedUser });
@@ -171,7 +175,7 @@ const addBookmark = async (req: Request, res: Response) => {
 };
 
 const removeBookmark = async (req: Request, res: Response) => {
-    const userId = req.user.id; // Assuming the user ID is set in the request by a middleware
+    const userId = req.user.id; 
     const projectId = req.body.projectId;
     if (!projectId) {
         return res.status(400).json({ success: false, message: "Project ID is required" });
@@ -181,10 +185,10 @@ const removeBookmark = async (req: Request, res: Response) => {
             where: { id: userId },
             data: {
                 bookmarks: {
-                    disconnect: { id: projectId }, // Connect the project to the user's bookmarks
+                    disconnect: { id: projectId },
                 },
             },
-            include: { bookmarks: true }, // Include the updated bookmarks in the response
+            include: { bookmarks: true }, 
         });
 
         return res.status(200).json({ success: true, data: updatedUser });
