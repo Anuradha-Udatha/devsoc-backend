@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { createBlogSchema, updateBlogSchema } from "../Validation/ZodValidation";
 
-//use console.log(parseResult.error) in return json to find errors in input validation
 
 const client = new PrismaClient();
 
